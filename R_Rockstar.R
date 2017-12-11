@@ -1168,5 +1168,24 @@ library(help="datasets")
        
        
        
+  ##################################################################################################################################
+       
+       #Individual Scripting Assignment
+
+       #Create an R Markdown Word or HTML document which contains your information (name, etc), the question in Text form, 
+       #and displays your code and the output for the below questions:
+
+
+#Create a character vector with length of number-of-rows-of-iris-dataset (iris is a built-in dataset), such that, each element
+ #gets a character value – “greater than 5″ if the corresponding ‘Sepal.Length’ > 5, else it should get “lesser than 5″.
+
+
+#1) Make the logic for above problem statement using a 'for-loop' and a 'if-else' statement
+
+#2) Make the logic for above problem statement using a ifelse() function
+
+#3) Create a logic for the same problem statement using apply() function
+       
+       
        
 
