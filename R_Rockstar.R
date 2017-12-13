@@ -1186,6 +1186,31 @@ library(help="datasets")
 
 #3) Create a logic for the same problem statement using apply() function
        
-       
+ iris
+head(iris)
+names(iris)
+char_vector <- c(iris$Sepal.Length)
+char_vector
+?Control
+
+storage <-character(150)
+
+for (i in char_vector) {
+if (i > 5){ storage[i] <- "Greater than 5"
+}else{
+storage[i] <- "Lesser than 5"
+}
+}
+
+storage
+
+
+for (i in char_vector) {
+if (i > 5){ print("Greater than 5")
+} else{
+print("Lesser than 5")
+}
+}
+      
        
 
