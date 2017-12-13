@@ -1186,31 +1186,38 @@ library(help="datasets")
 
 #3) Create a logic for the same problem statement using apply() function
        
- iris
-head(iris)
-names(iris)
-char_vector <- c(iris$Sepal.Length)
-char_vector
-?Control
+for (i in 1:10) {print (i) }
 
-storage <-character(150)
+my_vector= for (i in 1:10) {print (i) } 
 
-for (i in char_vector) {
-if (i > 5){ storage[i] <- "Greater than 5"
+
+my_vector <- vector("numeric", 10L)
+for(i in 1:10) my_vector[i] <- i
+my_vector
+
+
+#1. Create a Vector which has a sequence of values of the Sepal Length
+vec <- c(iris$Sepal.Length)
+#2. Check
+vec
+length(vec)
+# 3. Create a null vector called storage which is a character vector and has a length of 150
+storage <- vector("character")
+length(storage)
+
+
+for (i in vec){
+if (i>5) {
+storage[i] ='greater than 5' 
 }else{
-storage[i] <- "Lesser than 5"
+storage[i]='lesser than 5' 
 }
 }
-
+length(storage)
 storage
 
+char_vector <-c(iris$Sepal.Length)
+ifelse(char_vector>5,print('greater than 5'),print('lesser than 5'))
+length(char_vector)
 
-for (i in char_vector) {
-if (i > 5){ print("Greater than 5")
-} else{
-print("Lesser than 5")
-}
-}
-      
-       
-
+#Create a logic for the same problem statement using apply() function
