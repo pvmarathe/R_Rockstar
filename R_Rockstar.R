@@ -1175,9 +1175,8 @@ library(help="datasets")
        #Create an R Markdown Word or HTML document which contains your information (name, etc), the question in Text form, 
        #and displays your code and the output for the below questions:
 
-
 #Create a character vector with length of number-of-rows-of-iris-dataset (iris is a built-in dataset), such that, each element
- #gets a character value – “greater than 5″ if the corresponding ‘Sepal.Length’ > 5, else it should get “lesser than 5″.
+#gets a character value – “greater than 5″ if the corresponding ‘Sepal.Length’ > 5, else it should get “lesser than 5″.
 
 
 #1) Make the logic for above problem statement using a 'for-loop' and a 'if-else' statement
@@ -1185,15 +1184,14 @@ library(help="datasets")
 #2) Make the logic for above problem statement using a ifelse() function
 
 #3) Create a logic for the same problem statement using apply() function
-       
-for (i in 1:10) {print (i) }
-
-my_vector= for (i in 1:10) {print (i) } 
 
 
-my_vector <- vector("numeric", 10L)
-for(i in 1:10) my_vector[i] <- i
-my_vector
+iris
+head(iris)
+names(iris)
+char_vector <- c(iris$Sepal.Length)
+char_vector
+
 
 
 #1. Create a Vector which has a sequence of values of the Sepal Length
@@ -1201,23 +1199,49 @@ vec <- c(iris$Sepal.Length)
 #2. Check
 vec
 length(vec)
+print(vec[2])
+
 # 3. Create a null vector called storage which is a character vector and has a length of 150
-storage <- vector("character")
+storage = character(150)
 length(storage)
+is.character(storage)
 
 
-for (i in vec){
-if (i>5) {
-storage[i] ='greater than 5' 
-}else{
-storage[i]='lesser than 5' 
-}
-}
+for (i in 1:150){
+  if (vec[i]>5.0) {
+    #print(i)
+    storage[i] = 'greater than 5'
+    #print("I'm here")
+    }else{
+      storage[i] ='lesser than 5' 
+    }
+  }
 length(storage)
 storage
+
+
+
+
 
 char_vector <-c(iris$Sepal.Length)
 ifelse(char_vector>5,print('greater than 5'),print('lesser than 5'))
 length(char_vector)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Create a logic for the same problem statement using apply() function
