@@ -1,0 +1,117 @@
+### DATA PREPARATION & GETTING TO KNOW THE DATA ###
+
+tedtalks <- read.csv("C:\\Users\\prasa\\Desktop\\Data\\ted-talks\\ted_main.csv",header = TRUE, stringsAsFactors =FALSE) # Importing the dataset into R Studio
+str(tedtalks)
+dim(tedtalks)
+colnames(tedtalks) 
+head(tedtalks)
+
+
+install.packages("tidyverse")
+install.packages("anytime")
+install.packages("sqldf")
+library(tidyverse)
+library(anytime) # For converting UNIX timestamps 
+library(sqldf)
+
+
+summary(tedtalks1$views)
+hist(tedtalks1$views)
+summary(tedtalks1$comments)
+hist(tedtalks1$comments)
+summary(tedtalks$duration)  # Shortest Ted Talk is 2.25 minutes, longest is 87 minutes
+hist(tedtalks$duration)
+
+# Converting unix timestamps into human readable format
+tedtalks$film_date = anydate(tedtalks$film_date)
+tedtalks$published_date = anydate(tedtalks$published_date)
+
+head(tedtalks)
+nrow(tedtalks)  # There are in all 2550 ted talks
+colnames(tedtalks)
+
+# Most viewed Ted talks of all time
+
+sqldf("select event,main_speaker,speaker_occupation,published_date,views from tedtalks order by views desc") # Ted2006 event, speaker: Ken Robinson whose occupation is Author/educator got the most 
+# number of views i.e 47.2M views
+
+# Ted Talks that received the most comments
+
+sqldf("select event,main_speaker,speaker_occupation,published_date,comments from tedtalks order by comments desc") # Richard Dawkins whose occupation is an evolutionary biologist received the 
+# maximum number of comments (6404) for his TED2002 event
+
+
+# Ted talks having most duration
+
+sqldf("select event,main_speaker,speaker_occupation,published_date,duration from tedtalks order by duration desc") # The ted event that has the maximum duration is the one held in University of California
+# the speaker was Douglas Adams whose profession is author/ satirist. The video was published on 16th March 2010 and duration was 5256 seconds
+
+
+# How many Ted events are there in the dataset and how many percent of these had more than 1 speakers
+
+sqldf("select event,num_speaker from tedtalks where num_speaker = 1") # 58 Ted events out of 2550 ted events had more than 1 speaker. % Ted events that had more than 1 speaker is 2.3%
+
+# Ted events published by time
+
+TedEventsByYear <- sqldf("select strftime('%Y', published_date * 3600 * 24, 'unixepoch') PublishedYear,event from tedtalks")
+TedEventsByYear
+table(TedEventsByYear$PublishedYear)  # this is similar to select publishedyear,count(event) group by 1
+barplot(table(TedEventsByYear$PublishedYear),main="TED TALKS PUBLISHED BY YEAR", xlab="YEAR PUBLISHED", ylab="NUMBER TED EVENTS",col="darkgreen")
+
+
+Difference <- sqldf("select published_date, film_date, published_date - film_date as difference from tedtalks")
+Difference
+summary(Difference$difference)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#-347.0    50.0   100.5   250.3   191.0 13880.0
+
+# Scatter Plot of duration vs number of views
+ggplot(data = tedtalks) +
+  geom_point(mapping = aes(x=views,y=duration))
+
+# Scatter Plot of views vs number of comments
+ggplot(data = tedtalks) +
+  geom_point(mapping = aes(x=views,y=comments))
+
+cor(tedtalks[, c("views", "comments")])
+# As the scatterplot and the correlation matrix show, the pearson coefficient is slightly more than 0.5. This suggests a medium 
+# to strong correlation between the two quantities. This result was pretty expected as mentioned above. Let us now check the number
+# of views and comments on the 10 most commented TED Talks of all time.
+
+# Comments by Ted events. # Will not be using anywhere
+
+CommentsByTedEvent <- sqldf("select event, sum(comments) as total_comments,sum(views) as total_views, sum(duration) as total_duration from tedtalks group by 1 order by 1")
+CommentsByTedEvent 
+
+languages <- sqldf("select url,event,languages from tedtalks order by 1 ") # explore languages
+summary(tedtalks$languages)
+#On average, a TED Talk is available in 27 different languages. The maximum number of languages a TED Talk is available in
+#is a staggering 72. Let us check which talk this is.
+
+tedtalks[tedtalks$languages==72,]
+#The most translated TED Talk of all time is Matt Cutts' Try Something New in 30 Days. The talk does have a very universal theme of exploration. The sheer number of languages it's available in demands a little more inspection though as it has just over 8 million views, far fewer than the most popular TED Talks.
+#Finally, let us check if there is a correlation between the number of views and the number of languages a talk is availbale in. We would think that this should be the case since the talk is more accessible to a larger number of people but as Matt Cutts' talk shows, it may not really be the case.
+
+
+
+ggplot(tedtalks, aes(x=languages, y=views)) + geom_point()
+cor(tedtalks[, c("languages","views")])
+# The Pearson coefficient is 0.38 suggesting a medium correlation between the aforementioned quantities.
+
+
+
+
+tedtalks[tedtalks$duration == 135,]  # Shortest Ted Event 
+tedtalks[tedtalks$duration == 5256,] # Longest Ted Event
+
+occupations <- sqldf("select speaker_occupation,count(event) as occurences 
+                     from tedtalks 
+                     group by 1
+                     having occurences >= 20 
+                     order by 2 desc")
+
+SpeakerOccupationCount <- ggplot(data = occupations, aes(x=speaker_occupation,y=occurences)) +
+  geom_bar(stat="identity",fill="steelblue") +
+  theme_minimal()
+
+SpeakerOccupationCount
