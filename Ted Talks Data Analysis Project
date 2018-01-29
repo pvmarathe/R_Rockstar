@@ -1,11 +1,56 @@
-### DATA PREPARATION & GETTING TO KNOW THE DATA ###
+0. Whats your hypothesis ? 
+
+
+1. Ted Talks Definition of POpularity
+
+Check 3rd quartile for views
+Check 3rd quartile for comments. 
+Ted Talks that satisfy both those conditions
+
+
+2. Number of speakers and duration. Is there any correlation
+
+3. Comments and Views yearly trend. Is there any trend?
+
+4. The maximum value of published - filmed date i 13880. Check for outliers. 
+It is skewing the published - filmed date variable
+
+5. Scatter plot of duration and views for only popular ted talks and see
+if there is any trend in scatterplot
+
+6. When you plot views vs comments, find the outliers especially the 
+one that has 6000 comments
+
+7. Correlation Matrix
+
+8. Word Cloud 
+
+Below is the R-Code
+
+### DATA PREPARATION ###
+
 
 tedtalks <- read.csv("C:\\Users\\prasa\\Desktop\\Data\\ted-talks\\ted_main.csv",header = TRUE, stringsAsFactors =FALSE) # Importing the dataset into R Studio
+ 
 str(tedtalks)
+
 dim(tedtalks)
+
 colnames(tedtalks) 
+ 
 head(tedtalks)
 
+##https://www.kaggle.com/mikaelhuss/r-clone-of-ted-data-analysis-notebook
+##http://rpubs.com/AnanyaDu/337276
+##https://www.kaggle.com/gsdeepakkumar/lets-talk-about-ted-talks
+# http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization
+
+# 1. Which Ted talk got the most number of views, comments? What was the duration of that Ted Talk. What was the date the ted talk was published. Who was the spealer of the talk?
+# What was the speaer's occupation?
+# 2. What is the average time between date of publishing and creation for ted talks? 
+# 3. What 
+# 4. Which months are most popular among TED and TEDx chapters? 
+# 5. Which themes are most popular amongst TEDsters?
 
 install.packages("tidyverse")
 install.packages("anytime")
@@ -49,29 +94,38 @@ sqldf("select event,main_speaker,speaker_occupation,published_date,duration from
 
 # How many Ted events are there in the dataset and how many percent of these had more than 1 speakers
 
-sqldf("select event,num_speaker from tedtalks where num_speaker = 1") # 58 Ted events out of 2550 ted events had more than 1 speaker. % Ted events that had more than 1 speaker is 2.3%
+sqldf("select event,num_speaker from tedtalks where num_speaker > 1") # 58 Ted events out of 2550 ted events had more than 1 speaker. % Ted events that had more than 1 speaker is 2.3%
 
 # Ted events published by time
 
 TedEventsByYear <- sqldf("select strftime('%Y', published_date * 3600 * 24, 'unixepoch') PublishedYear,event from tedtalks")
 TedEventsByYear
 table(TedEventsByYear$PublishedYear)  # this is similar to select publishedyear,count(event) group by 1
-barplot(table(TedEventsByYear$PublishedYear),main="TED TALKS PUBLISHED BY YEAR", xlab="YEAR PUBLISHED", ylab="NUMBER TED EVENTS",col="darkgreen")
+barplot(table(TedEventsByYear$PublishedYear),main="TED TALKS PUBLISHED BY YEAR", xlab="YEAR PUBLISHED", ylab="NUMBER TED EVENTS",col="darkblue")
 
-
+# How long does it take to publish after filming the ted talk
 Difference <- sqldf("select published_date, film_date, published_date - film_date as difference from tedtalks")
 Difference
-summary(Difference$difference)
+# Create another dataset as some differences are negative
+Difference2 <- sqldf("select * from Difference a where a.difference > 0")
+Difference2
+
+#Average time taken to publish a filmed Ted Talk is 252 days. Half of ted talks are published within 
+summary(Difference2$difference)
 #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 #-347.0    50.0   100.5   250.3   191.0 13880.0
 
 # Scatter Plot of duration vs number of views
+# Hypothesis: As duration increases, view decreases
 ggplot(data = tedtalks) +
   geom_point(mapping = aes(x=views,y=duration))
 
+ggplot(data = tedtalks) +
+  geom_point(mapping = aes(x=duration,y=views))
+
 # Scatter Plot of views vs number of comments
 ggplot(data = tedtalks) +
-  geom_point(mapping = aes(x=views,y=comments))
+  geom_point(mapping = aes(x=views,y=comments), color = 'red')
 
 cor(tedtalks[, c("views", "comments")])
 # As the scatterplot and the correlation matrix show, the pearson coefficient is slightly more than 0.5. This suggests a medium 
@@ -80,7 +134,7 @@ cor(tedtalks[, c("views", "comments")])
 
 # Comments by Ted events. # Will not be using anywhere
 
-CommentsByTedEvent <- sqldf("select event, sum(comments) as total_comments,sum(views) as total_views, sum(duration) as total_duration from tedtalks group by 1 order by 1")
+CommentsByTedEvent <- sqldf("select event,count(title) as num_ted_talks_by_event,sum(comments) as total_comments,sum(views) as total_views, sum(duration) as total_duration from tedtalks group by 1 order by 1")
 CommentsByTedEvent 
 
 languages <- sqldf("select url,event,languages from tedtalks order by 1 ") # explore languages
